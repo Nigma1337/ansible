@@ -1,8 +1,8 @@
 - hosts: personal
   remote_user: root
   vars:
-    domain: "ctfd.nigma1337.xyz"
-    email: "mgs@iedi.com"
+    domain: "example.domain"
+    email: "example@email.ha"
   tasks:
   - name: Setup needed packages
     ansible.builtin.apt:
@@ -36,6 +36,6 @@
       block: |4
                 - 443:443
   - name: Upload nginx.conf
-    ansible.builtin.copy:
+    ansible.builtin.template:
       src: ./nginx.conf
       dest: /srv/ctfd/conf/nginx/http.conf
