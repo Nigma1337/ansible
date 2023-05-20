@@ -1,0 +1,45 @@
+- name: "Setup ghidra server"
+  hosts: ghidra
+  remote_user: root
+  tasks:
+    - name: Setup needed packages
+      ansible.builtin.apt:
+        pkg:
+          - unzip
+          - openjdk-17-jre
+        state: present
+        update_cache: true
+    - name: "Find tarball url"
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/NationalSecurityAgency/ghidra/releases/latest
+        return_content: true
+      register: json_reponse
+    - name: "Download and unpack release tarball"
+      ansible.builtin.unarchive:
+        remote_src: true
+        src: "{{ json_reponse.json.assets[0].browser_download_url }}"
+        dest: /srv/
+        list_files: true
+        creates: "/srv/ghidra"
+      register: unarchive_result
+    - name: "Rename created folder"
+      ansible.builtin.copy:
+        remote_src: true
+        src: "/srv/{{ unarchive_result.files[0] }}"
+        dest: "/srv/ghidra"
+        force: false
+        mode: '755'
+      when: unarchive_result is not skipped
+    - name: Delete old directory
+      ansible.builtin.file:
+        state: absent
+        path: "/srv/{{ unarchive_result.files[0] }}"
+      when: unarchive_result is not skipped
+    - name: "Install ghidra server"
+      ansible.builtin.command:
+        cmd: "/srv/ghidra/server/svrInstall"
+        creates: "/etc/init.d/ghidraSvr"
+    - name: "Ensure ghidraSvr is running"
+      ansible.builtin.command:
+        cmd: "/etc/init.d/ghidraSvr start"
+        creates: "/run/wrapper.ghidraSvr.pid"

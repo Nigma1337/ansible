@@ -1,41 +1,43 @@
-- hosts: personal
+- name: "Setup CTFd"
+  hosts: personal
   remote_user: root
   vars:
     domain: "example.domain"
     email: "example@email.ha"
   tasks:
-  - name: Setup needed packages
-    ansible.builtin.apt:
-      pkg:
-        - docker
-        - certbot
-        - docker-compose
-      state: latest
-      update_cache: true
-  - name: Download ctfd
-    ansible.builtin.git:
-      repo: https://github.com/CTFd/CTFd.git
-      dest: /srv/ctfd
-      force: yes
-  - name: Obtain SSL certificate
-    ansible.builtin.command: 
-      cmd: certbot certonly --standalone -m "{{ email }}" --agree-tos --noninteractive --domain "{{ domain }}"
-  - name: Edit docker-compose to include our SSL cert and key
-    blockinfile: 
-      path: /srv/ctfd/docker-compose.yml 
-      insertafter: "./conf/nginx/http.conf:/etc/nginx/nginx.conf"
-      block: |4
-                - /etc/letsencrypt/live/{{ domain }}/privkey.pem:/etc/nginx/ssl/privkey.pem
-                - /etc/letsencrypt/live/{{ domain }}/fullchain.pem:/etc/nginx/ssl/cert.pem
-  - name: Edit docker-compose to also listen on port 443
-    blockinfile: 
-      marker_begin: Start port
-      marker_end: End port
-      path: /srv/ctfd/docker-compose.yml 
-      insertafter: "80:80"
-      block: |4
-                - 443:443
-  - name: Upload nginx.conf
-    ansible.builtin.template:
-      src: ./nginx.conf
-      dest: /srv/ctfd/conf/nginx/http.conf
+    - name: Setup needed packages
+      ansible.builtin.apt:
+        pkg:
+          - docker
+          - certbot
+        state: present
+        update_cache: true
+    - name: Download ctfd
+      ansible.builtin.git:
+        repo: https://github.com/CTFd/CTFd.git
+        dest: /srv/ctfd
+        force: true
+    - name: Obtain SSL certificate
+      ansible.builtin.command:
+        cmd: certbot certonly --standalone -m "{{ email }}" --agree-tos --noninteractive --domain "{{ domain }}"
+        creates: /etc/letsencrypt/live/{{ domain }}/privkey.pem
+    - name: Edit docker-compose to include our SSL cert and key
+      ansible.builtin.blockinfile:
+        path: /srv/ctfd/docker-compose.yml
+        insertafter: "./conf/nginx/http.conf:/etc/nginx/nginx.conf"
+        block: |4
+                  - /etc/letsencrypt/live/{{ domain }}/privkey.pem:/etc/nginx/ssl/privkey.pem
+                  - /etc/letsencrypt/live/{{ domain }}/fullchain.pem:/etc/nginx/ssl/cert.pem
+    - name: Edit docker-compose to also listen on port 443
+      ansible.builtin.blockinfile:
+        marker_begin: Start port
+        marker_end: End port
+        path: /srv/ctfd/docker-compose.yml
+        insertafter: "80:80"
+        block: |4
+                  - 443:443
+    - name: "Upload nginx.conf"
+      ansible.builtin.template:
+        src: ./nginx.conf
+        dest: /srv/ctfd/conf/nginx/http.conf
+        mode: '755'
