@@ -1,22 +1,30 @@
 - name: "Setup CTFd"
-  hosts: personal
+  hosts: ctfd
   remote_user: root
   vars:
-    domain: "example.domain"
-    email: "example@email.ha"
+    domain: "ctfd.kalmarunionen.dk"
+    email: "magnusgsvend@gmail.com"
   tasks:
     - name: Setup needed packages
       ansible.builtin.apt:
         pkg:
-          - docker
           - certbot
         state: present
         update_cache: true
+    - name: Get get_docker
+      ansible.builtin.get_url:
+        url: https://get.docker.com
+        dest: ./get_docker.sh
+        mode: '755'
+    - name: Install docker
+      ansible.builtin.command:
+        cmd: bash get_docker.sh
+        creates: /usr/bin/docker
     - name: Download ctfd
       ansible.builtin.git:
         repo: https://github.com/CTFd/CTFd.git
         dest: /srv/ctfd
-        force: true
+        version: master
     - name: Obtain SSL certificate
       ansible.builtin.command:
         cmd: certbot certonly --standalone -m "{{ email }}" --agree-tos --noninteractive --domain "{{ domain }}"
@@ -41,3 +49,7 @@
         src: ./nginx.conf
         dest: /srv/ctfd/conf/nginx/http.conf
         mode: '755'
+    - name: Start CTFd
+      ansible.builtin.command:
+        cmd: docker compose up -d
+        chdir: /srv/ctfd

@@ -1,0 +1,22 @@
+- name: "Setup lumen server"
+  hosts: lumen
+  remote_user: root
+  tasks:
+    - name: Get get_docker
+      ansible.builtin.get_url:
+        url: https://get.docker.com
+        dest: ./get_docker.sh
+        mode: '755'
+    - name: Install docker
+      ansible.builtin.command:
+        cmd: bash get_docker.sh
+        creates: /usr/bin/docker
+    - name: Download lumen
+      ansible.builtin.git:
+        repo: https://github.com/naim94a/lumen.git
+        dest: /srv/lumen
+        version: master
+    - name: Start lumen
+      ansible.builtin.command:
+        cmd: docker compose up -d
+        chdir: /srv/lumen
