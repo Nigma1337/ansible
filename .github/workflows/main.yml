@@ -14,6 +14,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Install ansible
         run: python3 -m pip install --upgrade --user ansible
+      - name: Add ansible to path
+        run: echo "/Users/runner/Library/Python/3.11/bin" >> $GITHUB_PATH
       - name: Run vagrant
         run: vagrant up ghidra
   lumen:
@@ -23,6 +25,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Install ansible
         run: python3 -m pip install --upgrade --user ansible
+      - name: Add ansible to path
+        run: echo "/Users/runner/Library/Python/3.11/bin" >> $GITHUB_PATH
       - name: Run vagrant
         run: vagrant up ghidra
   ctfd:
@@ -32,5 +36,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Install ansible
         run: python3 -m pip install --upgrade --user ansible
+      - name: Add ansible to path
+        run: echo "/Users/runner/Library/Python/3.11/bin" >> $GITHUB_PATH
       - name: Run vagrant
         run: vagrant up ghidra
