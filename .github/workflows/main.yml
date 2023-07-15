@@ -28,7 +28,7 @@ jobs:
       - name: Add ansible to path
         run: echo "/Users/runner/Library/Python/3.11/bin" >> $GITHUB_PATH
       - name: Run vagrant
-        run: vagrant up ghidra
+        run: vagrant up lumen
   ctfd:
     runs-on: macos-latest
     steps:
@@ -39,4 +39,4 @@ jobs:
       - name: Add ansible to path
         run: echo "/Users/runner/Library/Python/3.11/bin" >> $GITHUB_PATH
       - name: Run vagrant
-        run: vagrant up ghidra
+        run: vagrant up ctfd
