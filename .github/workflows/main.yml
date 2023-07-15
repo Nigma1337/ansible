@@ -12,6 +12,10 @@ jobs:
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v3
+      - name: Setup python
+        uses: setup-python
+      - name: Install ansible
+        run: python3 -m pip install --upgrade --user ansible
       - name: Run vagrant
         run: vagrant up ghidra
   lumen:
@@ -19,6 +23,10 @@ jobs:
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v3
+      - name: Setup python
+        uses: setup-python
+      - name: Install ansible
+        run: python3 -m pip install --upgrade --user ansible
       - name: Run vagrant
         run: vagrant up ghidra
   ctfd:
@@ -26,5 +34,9 @@ jobs:
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v3
+      - name: Setup python
+        uses: setup-python
+      - name: Install ansible
+        run: python3 -m pip install --upgrade --user ansible
       - name: Run vagrant
         run: vagrant up ghidra
