@@ -12,8 +12,10 @@ jobs:
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v3
-      - name: Setup python
-        uses: setup-python
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip' # caching pip dependencies
       - name: Install ansible
         run: python3 -m pip install --upgrade --user ansible
       - name: Run vagrant
@@ -23,8 +25,10 @@ jobs:
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v3
-      - name: Setup python
-        uses: setup-python
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip' # caching pip dependencies
       - name: Install ansible
         run: python3 -m pip install --upgrade --user ansible
       - name: Run vagrant
@@ -34,8 +38,10 @@ jobs:
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v3
-      - name: Setup python
-        uses: setup-python
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip' # caching pip dependencies
       - name: Install ansible
         run: python3 -m pip install --upgrade --user ansible
       - name: Run vagrant
