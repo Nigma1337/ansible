@@ -1,5 +1,6 @@
+---
 - name: "Setup ghidra server"
-  hosts: ghidra
+  hosts: all
   remote_user: root
   tasks:
     - name: Setup needed packages
@@ -9,6 +10,7 @@
           - openjdk-17-jre
         state: present
         update_cache: true
+      become: true
     - name: "Find tarball url"
       ansible.builtin.uri:
         url: https://api.github.com/repos/NationalSecurityAgency/ghidra/releases/latest
@@ -21,6 +23,7 @@
         dest: /srv/
         list_files: true
         creates: "/srv/ghidra"
+      become: true
       register: unarchive_result
     - name: "Rename created folder"
       ansible.builtin.copy:
@@ -28,7 +31,8 @@
         src: "/srv/{{ unarchive_result.files[0] }}"
         dest: "/srv/ghidra"
         force: false
-        mode: '755'
+        mode: "755"
+        owner: "{{ ansible_user }}"
       when: unarchive_result is not skipped
     - name: Delete old directory
       ansible.builtin.file:

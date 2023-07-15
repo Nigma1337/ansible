@@ -1,12 +1,14 @@
+---
 - name: "Setup lumen server"
-  hosts: lumen
+  hosts: all
   remote_user: root
+  become: true
   tasks:
     - name: Get get_docker
       ansible.builtin.get_url:
         url: https://get.docker.com
         dest: ./get_docker.sh
-        mode: '755'
+        mode: "755"
     - name: Install docker
       ansible.builtin.command:
         cmd: bash get_docker.sh
@@ -20,3 +22,5 @@
       ansible.builtin.command:
         cmd: docker compose up -d
         chdir: /srv/lumen
+        creates: "dockershare"
+      become: true

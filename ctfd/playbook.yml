@@ -1,6 +1,8 @@
+---
 - name: "Setup CTFd"
-  hosts: ctfd
+  hosts: all
   remote_user: root
+  become: true # In case remote_user is overwritten
   vars:
     domain: "ctfd.kalmarunionen.dk"
     email: "magnusgsvend@gmail.com"
@@ -15,7 +17,7 @@
       ansible.builtin.get_url:
         url: https://get.docker.com
         dest: ./get_docker.sh
-        mode: '755'
+        mode: "755"
     - name: Install docker
       ansible.builtin.command:
         cmd: bash get_docker.sh
@@ -29,6 +31,7 @@
       ansible.builtin.command:
         cmd: certbot certonly --standalone -m "{{ email }}" --agree-tos --noninteractive --domain "{{ domain }}"
         creates: /etc/letsencrypt/live/{{ domain }}/privkey.pem
+      when: local is undefined
     - name: Edit docker-compose to include our SSL cert and key
       ansible.builtin.blockinfile:
         path: /srv/ctfd/docker-compose.yml
@@ -36,6 +39,7 @@
         block: |4
                   - /etc/letsencrypt/live/{{ domain }}/privkey.pem:/etc/nginx/ssl/privkey.pem
                   - /etc/letsencrypt/live/{{ domain }}/fullchain.pem:/etc/nginx/ssl/cert.pem
+      when: local is undefined
     - name: Edit docker-compose to also listen on port 443
       ansible.builtin.blockinfile:
         marker_begin: Start port
@@ -48,8 +52,9 @@
       ansible.builtin.template:
         src: ./nginx.conf
         dest: /srv/ctfd/conf/nginx/http.conf
-        mode: '755'
+        mode: "755"
     - name: Start CTFd
       ansible.builtin.command:
         cmd: docker compose up -d
         chdir: /srv/ctfd
+        creates: /srv/ctfd/.data

@@ -1,0 +1,30 @@
+---
+name: tests
+on:
+  workflow_dispatch:
+  push:
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  ghidra:
+    runs-on: macos-latest
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v3
+      - name: Run vagrant
+        run: vagrant up ghidra
+  lumen:
+    runs-on: macos-latest
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v3
+      - name: Run vagrant
+        run: vagrant up ghidra
+  ctfd:
+    runs-on: macos-latest
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v3
+      - name: Run vagrant
+        run: vagrant up ghidra
