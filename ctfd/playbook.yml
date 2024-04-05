@@ -5,7 +5,7 @@
   become: true # In case remote_user is overwritten
   vars:
     domain: "ctfd.kalmarunionen.dk"
-    email: "magnusgsvend@gmail.com"
+    email: "nigma1337@example.com"
   tasks:
     - name: Setup needed packages
       ansible.builtin.apt:
